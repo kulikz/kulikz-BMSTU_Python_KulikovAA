@@ -1,26 +1,57 @@
-from math import sin, cos, tan
-
-def function_1(alfa):
-    return (2*cos(alfa)*sin(2*alfa)-sin(alfa)/cos(alfa)-2*sin(alfa)*sin(2*alfa))
-
-def function_2(alfa):
-    return (tan(3*alfa))
-
-with (open("input.txt", "r") as input_file):
-    with open("output.txt", "w") as output_file:
-        headr = "   alfa        y1          y2"
-        print(headr)
-        output_file.write(headr + "\n")
-        for line in input_file:
-            alfa_s = line.strip()
-            if alfa_s:
-                alfa = float(alfa_s)
-
-                y1 = function_1(alfa)
-                y2 = function_2(alfa)
+# -*- coding: cp1251 -*-
+from math import *
 
 
-            output_line = "{0: 7.2f}    {1:7.2f}    {2:9.4f}".format (alfa, y1, y2)
+def f1(a, x):
+    result = (2 * sin(3 * pi - 2 * a) ** 2) * cos(5 * pi + 2 * a) ** 2
+    return result
 
-            print (output_line)
-            output_file.write(output_line + "\n")
+
+def f2(x):
+    result = 1 / 4 - 1 / 4 * sin(5 / 2 * pi - 8 * x)
+    return result
+
+
+def create_input_file():
+    """Создание входного файла с тестовыми данными"""
+    with open("lab1_input.txt", "w", encoding="utf-8") as fi:
+        fi.write("# Лабораторная работа №1\n")
+        fi.write("# a (угол в радианах)\n")
+        fi.write("#---\n")
+        test_data = [0.1, 0.5, 1.0, 1.57, 2.0, 2.5, 3.0, 3.14]
+        for value in test_data:
+            fi.write(f"{value}\n")
+    print("Создан файл lab1_input.txt")
+
+
+def main():
+    create_input_file()
+
+    fi = open("lab1_input.txt", "rt", encoding="utf-8")
+    fo = open("lab1_output.txt", "wt", encoding="utf-8")
+
+    # Пропускаем строки заголовка
+    line = fi.readline()
+    line = fi.readline()
+    line = fi.readline()
+
+    fo.write("+----------+----------+------------+\n")
+    fo.write("|    a     |   f1(a)  |    f2(a)   |\n")
+    fo.write("+----------+----------+------------+\n")
+
+    for line in fi:
+        line = line.strip()
+        if not line:
+            continue
+        a = float(line)
+        fo.write("| {0:8.4f} | {1:8.4f} | {2:10.4f} |\n".format(a, f1(a, a), f2(a)))
+
+    fo.write("+----------+----------+------------+\n")
+
+    fi.close()
+    fo.close()
+    print("Результаты записаны в lab1_output.txt")
+
+
+if __name__ == "__main__":
+    main()

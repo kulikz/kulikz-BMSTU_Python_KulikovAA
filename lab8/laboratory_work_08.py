@@ -1,218 +1,226 @@
-from tkinter import *
-from tkinter.messagebox import *
-from math import exp
+"""
+Лабораторная работа №8: GUI, модуль Tkinter
+Вариант 1: Графики функций, заданных рядами Тейлора и аналитически.
+Автор: DeepSeek
+"""
 
-def y_function():
-    eps = 0.0001
-    Lfun = []
-    x = Xmin
-    while x <= Xmax:
-        an = 1
-        Sum = an
-        n = 1
-        while (abs(an) > eps):
-            an *= x / n
-            Sum += an
-            n += 1
-        Lfun.append((x, Sum))
-        x += 1 / Kx
-    return Lfun
+import tkinter as tk
+from tkinter.messagebox import showwarning, askyesno
+from math import log
 
-def z_function():
-    Lfun = []
-    x = Xmin
-    while x <= Xmax:
-        fun = exp(x) + dY
-        Lfun.append((x, fun))
-        x += 1 / Kx
-    return Lfun
+# ========================== Глобальные переменные ==========================
+Kp = 0.7  # коэффициент размера окна (70% экрана)
+root = tk.Tk()
+root.title("Графики функций (Вариант 1)")
 
-def GetData():
-    global Xmax, Xmin, Ymax, Ymin
-    global dX, dY, Kx, Ky
-    tmpXmax = float(ent3.get())
-    tmpXmin = float(ent2.get())
-    tmpYmax = float(ent5.get())
-    tmpYmin = float(ent4.get())
-    tmpdY = float(ent7.get())
-    tmpdX = float(ent6.get())
-    if ((tmpXmin >= tmpXmax) or
-            (tmpYmin >= tmpYmax) or
-            (tmpdX <= 0)):
-        showwarning(title="Ошибка",
-                    message="Xmax > Xmin;\nYmax > Ymin;\nШаг меток > 0")
-    else:
-        Xmax = tmpXmax
-        Xmin = tmpXmin
-        Ymax = tmpYmax
-        Ymin = tmpYmin
-        dX = tmpdX
-        dY = tmpdY
-        Kx = MaxX / abs((Xmax - Xmin))
-        Ky = MaxY / abs((Ymax - Ymin))
+# Размеры полотна
+MaxX = int(root.winfo_screenwidth() * Kp)
+MaxY = int(root.winfo_screenheight() * Kp)
 
-def SetMark(a, b, LrBt=1):
-    ax_XY = []
-    if LrBt:
-        ax_XY.append((a, b))
-        ax_XY.append((a + 10, b))
-    else:
-        ax_XY.append((a, b))
-        ax_XY.append((a, b - 10))
-    cv.create_line(ax_XY, fill='black', width=2)
+# Пользовательские координаты
+Xmin, Xmax = -10.0, 10.0
+Ymin, Ymax = -5.0, 5.0
+dY = 1.0  # смещение второй функции
+dX = 1.0  # шаг меток
 
-def plotXY():
-    ax_XY = []
-    ax_XY.append((5, 5))
-    ax_XY.append((MaxX - 5, MaxY - 5))
-    cv.create_rectangle(ax_XY, fill="white", outline="green", width=2)
-
-    y = Ymin
-    y_pix = MaxY
-    flg = False
-    while y < Ymax:
-        textY = str(round(y, 2))
-        SetMark(0, y_pix, 1)
-        if flg:
-            cv.create_text(15, y_pix, text=textY, anchor=W)
-        SetMark(MaxX - 10, y_pix, 1)
-        if flg:
-            cv.create_text(MaxX - 15, y_pix, text=textY, anchor=E)
-        y += dX
-        y_pix -= dX * Ky
-        flg = not flg
-
-    x = Xmin
-    x_pix = 0
-    flg = False
-    while x < Xmax:
-        textX = str(round(x, 2))
-        SetMark(x_pix, 0, 0)
-        if flg:
-            cv.create_text(x_pix, 15, text=textX, anchor=N)
-        SetMark(x_pix, MaxY, 0)
-        if flg:
-            cv.create_text(x_pix, MaxY - 15, text=textX, anchor=S)
-        x += dX
-        x_pix += dX * Kx
-        flg = not flg
-
-def Draw(event):
-    cv.delete("all")
-    GetData()
-    plotXY()
-    Fdraw(y_function, 'blue')
-    Fdraw(z_function, 'red')
-
-def Fdraw(func, color):
-    Lxy = func()
-    Lpix = []
-    for xy in Lxy:
-        x = Kx * (xy[0] - Xmin)
-        if xy[1] != None:
-            y = MaxY - Ky * (xy[1] - Ymin)
-        else:
-            y = 0
-        Lpix.append((x, y))
-    cv.create_line(Lpix, fill=color)
-
-def Final(event):
-    window_deleted()
-
-def window_deleted():
-    if askyesno("Выход", "Завершить работу?"):
-        root.destroy()
-
-def showXY(event):
-    global ID1, ID2
-    x = event.x
-    y = event.y
-    ent0.delete(0, END)
-    ent1.delete(0, END)
-    ent0.insert(0, str(round(Xmin + x / Kx, 2)))
-    ent1.insert(0, str(round(Ymin + (MaxY - y) / Ky, 2)))
-    cv.delete(ID1)
-    cv.delete(ID2)
-    ID1 = cv.create_line(0, y, MaxX, y, dash=(3, 5))
-    ID2 = cv.create_line(x, 0, x, MaxY, dash=(3, 5))
-
-root = Tk()
-root.title("Графика")
-root.protocol('WM_DELETE_WINDOW', window_deleted)
-root.resizable(False, False)
-
-Kp = 0.7
-MaxX = root.winfo_screenwidth() * Kp
-MaxY = root.winfo_screenheight() * Kp
-
-cv = Canvas(root, width=MaxX, height=MaxY, bg="white")
-cv.grid(row=0, columnspan=9)
-cv.bind('<Button-1>', showXY)
-
-Xmin = -5.0
-Xmax = 5.0
-Ymin = -2.0
-Ymax = 10.0
-dY = 0.0
-dX = 1.0
-ID1 = 0
-ID2 = 0
+# Масштабные коэффициенты
 Kx = MaxX / abs((Xmax - Xmin))
 Ky = MaxY / abs((Ymax - Ymin))
 
-lba0 = Label(root, text="X:", width=10, fg="white", font="Ubuntu, 12")
-lba0.grid(row=1, column=0, sticky='e')
-ent0 = Entry(root, width=5, font="Ubuntu, 12")
-ent0.grid(row=1, column=1, sticky='w')
-ent0.insert(0, 0)
-lba1 = Label(root, text="Y:", width=10, fg="white", font="Ubuntu, 12")
-lba1.grid(row=2, column=0, sticky='e')
-ent1 = Entry(root, width=5, font="Ubuntu, 12")
-ent1.grid(row=2, column=1, sticky='w')
-ent1.insert(0, 0)
+# Идентификаторы для линий курсора
+ID1 = 0
+ID2 = 0
 
-lba2 = Label(root, text="Xmin:", width=10, fg="white", font="Ubuntu, 12")
-lba2.grid(row=1, column=2, sticky='e')
-ent2 = Entry(root, width=5, font="Ubuntu, 12")
-ent2.grid(row=1, column=3)
-ent2.insert(0, Xmin)
+# ========================== Функции вычисления ==========================
+def series_y(x, eps=1e-6):
+    """
+    Вычисление функции y(x) через ряд Тейлора.
+    Ряд: 2 * sum(1 / ((2*n+1) * x^(2*n+1))) для |x| > 1
+    """
+    if abs(x) <= 1:
+        return None  # ряд расходится при |x| <= 1
+    n = 0
+    term = 1 / ((2 * n + 1) * x ** (2 * n + 1))
+    total = term
+    while abs(term) > eps:
+        n += 1
+        term = 1 / ((2 * n + 1) * x ** (2 * n + 1))
+        total += term
+    return 2 * total
 
-lba3 = Label(root, text="Xmax:", width=10, fg="white", font="Ubuntu, 12")
-lba3.grid(row=1, column=4, sticky='e')
-ent3 = Entry(root, width=5, font="Ubuntu, 12")
-ent3.grid(row=1, column=5)
-ent3.insert(0, Xmax)
+def func_z(x, b):
+    """
+    Вычисление функции z(x) = ln((x+1)/(x-1)) + b.
+    Область определения: x > 1 или x < -1.
+    """
+    if abs(x) <= 1:
+        return None
+    return log((x + 1) / (x - 1)) + b
 
-lba4 = Label(root, text="Ymin:", width=10, fg="white", font="Ubuntu, 12")
-lba4.grid(row=2, column=2, sticky='e')
-ent4 = Entry(root, width=5, font="Ubuntu, 12")
-ent4.grid(row=2, column=3)
-ent4.insert(0, Ymin)
+def get_y_values():
+    """Возвращает список точек (x, y) для первой функции."""
+    points = []
+    x = Xmin
+    step = 1 / Kx  # шаг в пользовательских единицах
+    while x <= Xmax:
+        y = series_y(x)
+        if y is not None:
+            points.append((x, y))
+        x += step
+    return points
 
-lba5 = Label(root, text="Ymax:", width=10, fg="white", font="Ubuntu, 12")
-lba5.grid(row=2, column=4, sticky='e')
-ent5 = Entry(root, width=5, font="Ubuntu, 12")
-ent5.grid(row=2, column=5)
-ent5.insert(0, Ymax)
+def get_z_values(b):
+    """Возвращает список точек (x, z) для второй функции."""
+    points = []
+    x = Xmin
+    step = 1 / Kx
+    while x <= Xmax:
+        z = func_z(x, b)
+        if z is not None:
+            points.append((x, z))
+        x += step
+    return points
 
-lba6 = Label(root, text="Шаг меток:", width=10, fg="white", font="Ubuntu, 12")
-lba6.grid(row=1, column=6, sticky='e')
-ent6 = Entry(root, width=5, font="Ubuntu, 12")
-ent6.grid(row=1, column=7)
-ent6.insert(0, dX)
+# ========================== GUI-функции ==========================
+def get_data():
+    """Считывает данные из полей ввода."""
+    global Xmin, Xmax, Ymin, Ymax, dX, dY, Kx, Ky
+    try:
+        Xmin = float(ent_xmin.get())
+        Xmax = float(ent_xmax.get())
+        Ymin = float(ent_ymin.get())
+        Ymax = float(ent_ymax.get())
+        dX = float(ent_dx.get())
+        dY = float(ent_dy.get())
+    except ValueError:
+        showwarning("Ошибка", "Некорректный ввод чисел")
+        return False
 
-lba7 = Label(root, text="Смещение:", width=10, fg="white", font="Ubuntu, 12")
-lba7.grid(row=2, column=6, sticky='e')
-ent7 = Entry(root, width=5, font="Ubuntu, 12")
-ent7.grid(row=2, column=7)
-ent7.insert(0, dY)
+    if Xmin >= Xmax or Ymin >= Ymax or dX <= 0:
+        showwarning("Ошибка", "Должны выполняться:\nXmax > Xmin\nYmax > Ymin\nШаг > 0")
+        return False
 
-btn1 = Button(root, width=20, bg="#ccc", text="Рисовать")
-btn1.grid(row=1, column=8)
-btn1.bind("<Button-1>", Draw)
+    Kx = MaxX / abs((Xmax - Xmin))
+    Ky = MaxY / abs((Ymax - Ymin))
+    return True
 
-btn2 = Button(root, width=20, bg="#ccc", text="Выход")
-btn2.grid(row=2, column=8)
-btn2.bind("<Button-1>", Final)
+def plot_axes():
+    """Рисует координатные оси с метками."""
+    cv.delete("all")
+    # Прямоугольник области графика
+    cv.create_rectangle(5, 5, MaxX - 5, MaxY - 5, outline="green", width=2)
 
+    # Метки по оси Y
+    y = Ymin
+    while y <= Ymax:
+        y_pix = MaxY - Ky * (y - Ymin)
+        cv.create_line(0, y_pix, 10, y_pix, fill='black', width=2)
+        cv.create_line(MaxX - 10, y_pix, MaxX, y_pix, fill='black', width=2)
+        cv.create_text(20, y_pix, text=f"{y:.1f}", anchor=tk.W)
+        cv.create_text(MaxX - 20, y_pix, text=f"{y:.1f}", anchor=tk.E)
+        y += dX
+
+    # Метки по оси X
+    x = Xmin
+    while x <= Xmax:
+        x_pix = Kx * (x - Xmin)
+        cv.create_line(x_pix, MaxY, x_pix, MaxY - 10, fill='black', width=2)
+        cv.create_line(x_pix, 0, x_pix, 10, fill='black', width=2)
+        cv.create_text(x_pix, MaxY - 20, text=f"{x:.1f}", anchor=tk.N)
+        cv.create_text(x_pix, 20, text=f"{x:.1f}", anchor=tk.S)
+        x += dX
+
+def draw_graph(event=None):
+    """Рисует графики функций."""
+    if not get_data():
+        return
+    plot_axes()
+
+    # Первая функция (синий)
+    points_y = get_y_values()
+    pix_points = [(Kx * (x - Xmin), MaxY - Ky * (y - Ymin)) for x, y in points_y]
+    cv.create_line(pix_points, fill='blue', width=2)
+
+    # Вторая функция (красный)
+    try:
+        b = float(ent_dy.get())
+    except ValueError:
+        b = 0.0
+    points_z = get_z_values(b)
+    pix_points = [(Kx * (x - Xmin), MaxY - Ky * (z - Ymin)) for x, z in points_z]
+    cv.create_line(pix_points, fill='red', width=2)
+
+def show_xy(event):
+    """Выводит координаты мыши и рисует перекрестие."""
+    global ID1, ID2
+    x_pix, y_pix = event.x, event.y
+    x_user = Xmin + x_pix / Kx
+    y_user = Ymin + (MaxY - y_pix) / Ky
+
+    ent_x.delete(0, tk.END)
+    ent_y.delete(0, tk.END)
+    ent_x.insert(0, f"{x_user:.2f}")
+    ent_y.insert(0, f"{y_user:.2f}")
+
+    cv.delete(ID1)
+    cv.delete(ID2)
+    ID1 = cv.create_line(0, y_pix, MaxX, y_pix, dash=(3, 5))
+    ID2 = cv.create_line(x_pix, 0, x_pix, MaxY, dash=(3, 5))
+
+def final(event=None):
+    """Завершает программу."""
+    if askyesno("Выход", "Завершить работу?"):
+        root.destroy()
+
+def window_deleted():
+    """Обработчик закрытия окна."""
+    final()
+
+# ========================== GUI-виджеты ==========================
+root.resizable(False, False)
+root.protocol('WM_DELETE_WINDOW', window_deleted)
+
+# Полотно для графики
+cv = tk.Canvas(root, width=MaxX, height=MaxY, bg="white")
+cv.grid(row=0, columnspan=10)
+cv.bind('<Button-1>', show_xy)
+
+# Метки и поля ввода
+labels = [
+    ("X:", 1, 0), ("Y:", 2, 0),
+    ("Xmin:", 1, 2), ("Xmax:", 1, 4),
+    ("Ymin:", 2, 2), ("Ymax:", 2, 4),
+    ("Шаг:", 1, 6), ("b (смещ.):", 2, 6)
+]
+
+entries = []
+for text, row, col in labels:
+    lbl = tk.Label(root, text=text, width=10, fg="blue", font="Ubuntu 12")
+    lbl.grid(row=row, column=col, sticky='e')
+    ent = tk.Entry(root, width=8, font="Ubuntu 12")
+    ent.grid(row=row, column=col + 1)
+    entries.append(ent)
+
+ent_x, ent_y, ent_xmin, ent_xmax, ent_ymin, ent_ymax, ent_dx, ent_dy = entries
+
+# Заполнение начальными значениями
+ent_xmin.insert(0, str(Xmin))
+ent_xmax.insert(0, str(Xmax))
+ent_ymin.insert(0, str(Ymin))
+ent_ymax.insert(0, str(Ymax))
+ent_dx.insert(0, str(dX))
+ent_dy.insert(0, str(dY))
+ent_x.insert(0, "0.00")
+ent_y.insert(0, "0.00")
+
+# Кнопки
+btn_draw = tk.Button(root, width=15, text="Рисовать", bg="#ccc")
+btn_draw.grid(row=1, column=8, columnspan=2)
+btn_draw.bind("<Button-1>", draw_graph)
+
+btn_exit = tk.Button(root, width=15, text="Выход", bg="#ccc")
+btn_exit.grid(row=2, column=8, columnspan=2)
+btn_exit.bind("<Button-1>", final)
+
+# ========================== Запуск ==========================
 root.mainloop()
