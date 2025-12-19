@@ -4,8 +4,8 @@ import random
 
 def create_input_file():
     """Создание входного файла с тестовыми данными"""
-    with open("lab4_input.txt", "w", encoding="utf-8") as fi:
-        fi.write("# Лабораторная работа №4\n")
+    with open("lab5_input.txt", "w", encoding="utf-8") as fi:
+        fi.write("# Лабораторная работа №5\n")
         fi.write("# N (размер массива, 5 <= N <= 30)\n")
         fi.write("#---\n")
         fi.write("12\n")
@@ -15,8 +15,8 @@ def create_input_file():
 def main():
     create_input_file()
 
-    with open("lab4_input.txt", "rt", encoding="utf-8") as fi:
-        with open("lab4_output.txt", "wt", encoding="utf-8") as fo:
+    with open("lab5_input.txt", "rt", encoding="utf-8") as fi:
+        with open("lab5_output.txt", "wt", encoding="utf-8") as fo:
             # Пропускаем строки заголовка
             for _ in range(3):
                 fi.readline()
@@ -31,7 +31,7 @@ def main():
             for i in range(n):
                 mas.append(random.uniform(-5.0, 5.0))
 
-            fo.write("ЛАБОРАТОРНАЯ РАБОТА №4\n")
+            fo.write("ЛАБОРАТОРНАЯ РАБОТА №5\n")
             fo.write("=" * 60 + "\n")
             fo.write(f"Размер массива: N = {n}\n\n")
 
@@ -93,7 +93,7 @@ def main():
 
             fo.write("\n" + "=" * 60 + "\n")
 
-    print("Результаты записаны в lab4_output.txt")
+    print("Результаты записаны в lab5_output.txt")
 
 
 if __name__ == "__main__":
