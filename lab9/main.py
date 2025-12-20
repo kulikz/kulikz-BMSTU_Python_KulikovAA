@@ -1,21 +1,57 @@
 from lexer import Lexer
 from parser import Parser
+from codegen import CodeGen
 
-# Тестовый код на JavaScript
+# Тестовая программа
 js_code = """
 let x = 10;
-const y = 18;
-console.log(x+y);
+let y = 20;
+console.log(x + y);
 console.log(x * y);
-alert(x-y);
 """
-# Инициализация лексера и парсера
+
+# Создаем CodeGen
+codegen = CodeGen()
+
+# Создаем лексер и парсер
 lexer = Lexer().get_lexer()
-parser = Parser()
+parser = Parser(codegen)
 parser.parse()
 pg = parser.get_parser()
-# Лексический анализ
+
+# Разбираем и выполняем
 tokens = lexer.lex(js_code)
 ast = pg.parse(tokens)
-result = ast.eval()
+ast.eval()
 
+# Компилируем и запускаем
+codegen.create_ir()
+codegen.save_ir("output.ll")
+codegen.run()
+
+test_cases = [
+    "console.log(2 + 3);",
+    "console.log((2 + 3) * 4);",
+    "let a = 5; let b = 3; console.log(a * b);"
+]
+
+for test in test_cases:
+    print(f"\n {test}")
+
+    # Новый codegen для каждого теста
+    cg = CodeGen()
+    p = Parser(cg)
+    p.parse()
+    pg_test = p.get_parser()
+
+    tokens_test = lexer.lex(test)
+    ast_test = pg_test.parse(tokens_test)
+    ast_test.eval()
+
+    cg.create_ir()
+    cg.run()
+
+# Сохраняем исходный код
+with open("input.js", "w", encoding="utf-8") as f:
+    f.write(js_code)
+print(f"\nИсходный код сохранен в input.js")
