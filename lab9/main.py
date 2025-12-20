@@ -54,4 +54,3 @@ for test in test_cases:
 # Сохраняем исходный код
 with open("input.js", "w", encoding="utf-8") as f:
     f.write(js_code)
-print(f"\nИсходный код сохранен в input.js")
