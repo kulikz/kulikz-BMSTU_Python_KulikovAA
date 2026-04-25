@@ -1,38 +1,39 @@
 """
-Модуль с математическими функциями.
+Модуль с математическими операциями
 """
 
-# import
+# Константа
+PI = 3.14159
 
-__all__ = ['add', 'multiply']
+# __all__ определяет публичные имена
+__all__ = ['PI', 'add', 'substract', 'multiply', 'divide']
 
-# Константы
-_PI = 3.14159
 
-# Функции
 def add(a, b):
+    """Сложение двух чисел"""
     return a + b
 
-def _substract(a, b):
+
+def substract(a, b):
+    """Вычитание двух чисел"""
     return a - b
 
+
 def multiply(a, b):
+    """Умножение двух чисел"""
     return a * b
 
-def _divide(a, b):
-    if b == 0:
-        raise ValueError("Деление на ноль невозможно.")
-    else:
-        return a/b
 
-#print(add(10, 5))
+def divide(a, b):
+    """Деление двух чисел с проверкой на ноль"""
+    if b == 0:
+        raise ValueError("Деление на ноль невозможно")
+    return a / b
 
 
 if __name__ == "__main__":
-    print(add(5, 10))
-    print(_substract(5, 10))
-    print(multiply(5, 10))
-    print(_divide(5, 10))
-    print(_PI)
+    print("Модуль запущен как программа")
+    print(f"add(2, 30) = {add(2, 30)}")
+    print(f"PI = {PI}")
 else:
-    print("Модуль импортирован.")
+    print("Модуль импортирован")
