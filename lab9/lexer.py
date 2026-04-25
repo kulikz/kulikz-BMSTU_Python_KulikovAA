@@ -11,6 +11,17 @@ class Lexer:
         self.lexer.add('LET', r'let|var')
         self.lexer.add('CONST', r'const')
 
+        #Условия
+        self.lexer.add('IF', r'if')
+        self.lexer.add('LESS_EQUAL', r'<=')
+        self.lexer.add('GREATER_EQUAL', r'>=')
+        self.lexer.add('LESS', r'<')
+        self.lexer.add('GREATER', r'>')
+        self.lexer.add('EQUAL_EQUAL', r'==')
+        self.lexer.add('OPEN_BRACE', r'\{')
+        self.lexer.add('CLOSE_BRACE', r'\}')
+        self.lexer.add('FALSE', r'false')
+
         # Скобки
         self.lexer.add('OPEN_PAREN', r'\(')
         self.lexer.add('CLOSE_PAREN', r'\)')

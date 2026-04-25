@@ -2,12 +2,14 @@ from lexer import Lexer
 from parser import Parser
 from codegen import CodeGen
 
-# Тестовая программа
+# JS код
 js_code = """
-let x = 10;
-let y = 20;
-console.log(x + y);
-console.log(x * y);
+let flag = false;
+let R = 5;
+let x = 2;
+let y = 3;
+
+alert(flag);
 """
 
 # Создаем CodeGen
@@ -28,28 +30,6 @@ ast.eval()
 codegen.create_ir()
 codegen.save_ir("output.ll")
 codegen.run()
-
-test_cases = [
-    "console.log(2 + 3);",
-    "console.log((2 + 3) * 4);",
-    "let a = 5; let b = 3; console.log(a * b);"
-]
-
-for test in test_cases:
-    print(f"\n {test}")
-
-    # Новый codegen для каждого теста
-    cg = CodeGen()
-    p = Parser(cg)
-    p.parse()
-    pg_test = p.get_parser()
-
-    tokens_test = lexer.lex(test)
-    ast_test = pg_test.parse(tokens_test)
-    ast_test.eval()
-
-    cg.create_ir()
-    cg.run()
 
 # Сохраняем исходный код
 with open("input.js", "w", encoding="utf-8") as f:

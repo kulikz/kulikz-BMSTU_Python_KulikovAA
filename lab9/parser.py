@@ -8,7 +8,7 @@ class Parser:
         self.pg = ParserGenerator(
             ['NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
              'SEMI_COLON', 'SUM', 'SUB', 'MUL', 'DIV',
-             'ASSIGN', 'LET', 'CONST', 'ID'],
+             'ASSIGN', 'LET', 'CONST', 'ID', 'FALSE'],
             precedence=[
                 ('left', ['SUM', 'SUB']),
                 ('left', ['MUL', 'DIV']),
@@ -16,6 +16,11 @@ class Parser:
         )
 
     def parse(self):
+        @self.pg.production('expression : FALSE')
+        def expression_false(p):
+            from ast import Boolean
+            return Boolean(self.codegen, 'false')
+
         @self.pg.production('program : statements')
         def program(p):
             return Program(self.codegen, p[0])
@@ -77,6 +82,11 @@ class Parser:
         @self.pg.production('expression : ID')
         def expression_variable(p):
             return Variable(self.codegen, p[0].getstr())
+
+        @self.pg.production('statement : IF OPEN_PAREN expression CLOSE_PAREN OPEN_BRACE statements CLOSE_BRACE')
+        def statement_if(p):
+            # Пока просто пропускаем if
+            return p[5][0] if p[5] else None
 
         @self.pg.error
         def error_handle(token):

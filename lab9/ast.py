@@ -1,5 +1,15 @@
 from llvmlite import ir
 
+class Boolean:
+    def __init__(self, codegen, value):
+        self.codegen = codegen
+        self.value = value
+
+    def eval(self):
+        if self.codegen:
+            return ir.Constant(ir.IntType(32), 0)  # false = 0
+        return False
+
 
 class Number:
     def __init__(self, codegen, value):
